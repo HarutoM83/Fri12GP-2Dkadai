@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     {
         playerInput = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        animator = GetComponent<Animator >();
         life.Value = MaxLife;
     }
 
@@ -34,16 +34,17 @@ public class Player : MonoBehaviour
         if (move.x != 0f)
         {
             rb.linearVelocityX = move.x * speed;
-
             // 向き
             var localScale = transform.localScale;
             if (move.x < 0)
             {
                 localScale.x = 1f;
+                //animator.Play("Run");
             }
             else
             {
                 localScale.x = -1f;
+
             }
             transform.localScale = localScale;
         }
@@ -52,9 +53,11 @@ public class Player : MonoBehaviour
         if (playerInput.actions["Jump"].WasPressedThisFrame() && isGrounded)
         {
             rb.linearVelocityY = jumpSpeed;
-            animator.Play("Jump");
             isGrounded = false;
+            animator.Play("Jump");
         }
+
+        //攻撃
         if (playerInput.actions["Attack"].WasPressedThisFrame())
         {
             animator.Play("Attack");
@@ -62,11 +65,29 @@ public class Player : MonoBehaviour
        
     }
 
+    private void FixedUpdate()
+    {
+        isGrounded = false;
+    }
+
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        isGrounded = true;
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Floor"))
         {
             isGrounded = true;
+        }
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            if(life.Value > 0)
+            {
+                life.Value -= 10;
+            }
         }
     }
 
