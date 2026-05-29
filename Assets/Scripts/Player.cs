@@ -2,11 +2,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using R3;               // R3 core
 using R3.Triggers;
+using System.Security.Cryptography;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] float speed;
     [SerializeField] float jumpSpeed;
+    private bool isGrounded = false;
 
     public float MaxLife => 100f;
     public ReactiveProperty<float> life { get; private set; } = new();
@@ -45,9 +47,26 @@ public class Player : MonoBehaviour
         }
 
         // ジャンプ
-        if (playerInput.actions["Jump"].WasPressedThisFrame())
+        if (playerInput.actions["Jump"].WasPressedThisFrame() && isGrounded)
         {
             rb.linearVelocityY = jumpSpeed;
+            isGrounded = false;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Floor"))
+        {
+            isGrounded = true;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Floor"))
+        {
+            isGrounded = false;
         }
     }
 }
