@@ -15,12 +15,14 @@ public class Player : MonoBehaviour
 
     PlayerInput playerInput;
     Rigidbody2D rb;
+    Animator animator;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         playerInput = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
         life.Value = MaxLife;
     }
 
@@ -50,8 +52,14 @@ public class Player : MonoBehaviour
         if (playerInput.actions["Jump"].WasPressedThisFrame() && isGrounded)
         {
             rb.linearVelocityY = jumpSpeed;
+            animator.Play("Jump");
             isGrounded = false;
         }
+        if (playerInput.actions["Attack"].WasPressedThisFrame())
+        {
+            animator.Play("Attack");
+        }
+       
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

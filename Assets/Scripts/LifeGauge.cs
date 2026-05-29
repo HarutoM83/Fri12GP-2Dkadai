@@ -17,6 +17,10 @@ public class LifeGauge : MonoBehaviour
     {
         // ライフの最大値
         maxLifeText.text = player.MaxLife.ToString();
+        player.life.Subscribe(
+            life => lifeText.text = life.ToString());
+        player.life.Select(life => life / player.MaxLife)
+            .Subscribe(x => gaugeImage.fillAmount = x);
     }
 
     // Update is called once per frame
