@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] float speed;
     [SerializeField] float jumpSpeed;
+    public int Attackpower;
     public Renderer targetRenderer;
     public Renderer targetRenderer1;
     public Renderer targetRenderer2;
@@ -17,8 +18,13 @@ public class Player : MonoBehaviour
     public Color changeColor = Color.red;
     public float changeTime = 2f;
 
-    private bool isChanging = false;
     private bool isGrounded = false;
+    private bool isChanging = false;
+    public bool isAttacking = false;
+    public bool IsAttacking()
+    {
+        return isAttacking;
+    }
 
     public float MaxLife => 100f;
     public ReactiveProperty<float> life { get; private set; } = new();
@@ -32,7 +38,7 @@ public class Player : MonoBehaviour
     {
         playerInput = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator >();
+        animator = GetComponentInChildren<Animator>();
         life.Value = MaxLife;
         if (targetRenderer == null)
             targetRenderer = GetComponent<Renderer>();
@@ -50,13 +56,13 @@ public class Player : MonoBehaviour
             var localScale = transform.localScale;
             if (move.x < 0)
             {
+                animator.Play("Run");
                 localScale.x = 1f;
-                //animator.Play("Run");
             }
             else
             {
+                animator.Play("Run");
                 localScale.x = -1f;
-
             }
             transform.localScale = localScale;
         }
@@ -72,9 +78,18 @@ public class Player : MonoBehaviour
         //攻撃
         if (playerInput.actions["Attack"].WasPressedThisFrame())
         {
+            StartCoroutine(AttackRoutine());
             animator.Play("Attack");
         }
-       
+
+    }
+    IEnumerator AttackRoutine()
+    {
+        isAttacking = true;
+
+        yield return new WaitForSeconds(0.3f); // 攻撃判定時間
+
+        isAttacking = false;
     }
 
     private void FixedUpdate()
@@ -99,6 +114,7 @@ public class Player : MonoBehaviour
             if(life.Value > 0 && !isChanging)
             {
                 life.Value -= 10;
+                animator.Play("Die");
                 StartCoroutine(ChangeColorTemporarily());
             }
         }

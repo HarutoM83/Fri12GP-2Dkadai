@@ -2,11 +2,13 @@ using UnityEngine;
 
 public class Slime : MonoBehaviour
 {
+    [SerializeField] int life;
     [SerializeField] float movespeed;
     Rigidbody2D rb;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        Debug.Log("Slime HP = " + life);
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -24,5 +26,21 @@ public class Slime : MonoBehaviour
             localScale.x = -1f;
         }
         transform.localScale = localScale;
+    }
+
+    public void Damage(int damage)
+    {
+        Debug.Log("Damage received: " + damage);
+
+        life -= damage;
+
+        if (life <= 0)
+        {
+            Die();
+        }
+    }
+    void Die()
+    {
+        Destroy(gameObject);
     }
 }
