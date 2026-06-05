@@ -3,11 +3,21 @@ using UnityEngine.InputSystem;
 using R3;               // R3 core
 using R3.Triggers;
 using System.Security.Cryptography;
+using System.Collections;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] float speed;
     [SerializeField] float jumpSpeed;
+    public Renderer targetRenderer;
+    public Renderer targetRenderer1;
+    public Renderer targetRenderer2;
+    public Renderer targetRenderer3;
+    public Color normalColor = Color.white;
+    public Color changeColor = Color.red;
+    public float changeTime = 2f;
+
+    private bool isChanging = false;
     private bool isGrounded = false;
 
     public float MaxLife => 100f;
@@ -24,6 +34,8 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator >();
         life.Value = MaxLife;
+        if (targetRenderer == null)
+            targetRenderer = GetComponent<Renderer>();
     }
 
     // Update is called once per frame
@@ -84,9 +96,10 @@ public class Player : MonoBehaviour
         }
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            if(life.Value > 0)
+            if(life.Value > 0 && !isChanging)
             {
                 life.Value -= 10;
+                StartCoroutine(ChangeColorTemporarily());
             }
         }
     }
@@ -97,5 +110,27 @@ public class Player : MonoBehaviour
         {
             isGrounded = false;
         }
+    }
+
+    IEnumerator ChangeColorTemporarily()
+    {
+        isChanging = true;
+
+        // 色を変更
+        targetRenderer.material.color = changeColor;
+        targetRenderer1.material.color = changeColor;
+        targetRenderer2.material.color = changeColor;
+        targetRenderer3.material.color = changeColor;
+
+        // 指定時間待つ
+        yield return new WaitForSeconds(changeTime);
+
+        // 元に戻す
+        targetRenderer.material.color = normalColor;
+        targetRenderer1.material.color = normalColor;
+        targetRenderer2.material.color = normalColor;
+        targetRenderer3.material.color = normalColor;
+
+        isChanging = false;
     }
 }
