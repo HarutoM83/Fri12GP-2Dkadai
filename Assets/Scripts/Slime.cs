@@ -9,7 +9,7 @@ public class Slime : MonoBehaviour
     void Start()
     {
         Debug.Log("Slime HP = " + life);
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponentInParent<Rigidbody2D>();
     }
 
     // Update is called once per frame
