@@ -1,9 +1,10 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
 using R3;               // R3 core
 using R3.Triggers;
-using System.Security.Cryptography;
 using System.Collections;
+using System.Security.Cryptography;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -111,12 +112,23 @@ public class Player : MonoBehaviour
         }
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            if(life.Value > 0 && !isChanging)
+            if (life.Value > 0 && !isChanging)
             {
                 life.Value -= 10;
                 animator.Play("Die");
                 StartCoroutine(ChangeColorTemporarily());
             }
+            else if(life.Value <= 0)
+            {
+                animator.Play("Die");
+                Invoke("PlayerDie", 1f);
+            }
+        }
+        if (collision.gameObject.CompareTag("DeadZone"))
+        {
+            life.Value -= 100;
+            animator.Play("Die");
+            Invoke("PlayerDie", 1f);
         }
     }
 
@@ -148,5 +160,10 @@ public class Player : MonoBehaviour
         targetRenderer3.material.color = normalColor;
 
         isChanging = false;
+    }
+
+    public void PlayerDie()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

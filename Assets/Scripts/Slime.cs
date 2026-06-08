@@ -39,6 +39,13 @@ public class Slime : MonoBehaviour
             Die();
         }
     }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("DeadZone"))
+        {
+            Die();
+        }
+    }
     void Die()
     {
         Destroy(gameObject);
